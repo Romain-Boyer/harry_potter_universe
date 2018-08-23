@@ -1,2 +1,5 @@
 # pyCharm
 .idea/
+
+# Jupyter
+notebooks/.ipynb_checkpoints/*
