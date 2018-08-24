@@ -13,6 +13,15 @@ class HogwartsMember:
     def says(self, words):
         return f'{self._name} says "{words}"'
 
+    @staticmethod
+    def is_full_name(name_str):
+        names = name_str.split(' ')
+        return len(names) > 1
+
+    @classmethod
+    def dumbledore(cls):
+        return cls('Albus Percival Wulfric Brian Dumbledore', 1881, 'male')
+
 
 class Pupil(HogwartsMember):
     """
@@ -42,6 +51,37 @@ class Pupil(HogwartsMember):
             'Transfiguration': False
         }
 
+    @staticmethod
+    def passed(grade):
+        """
+        Given a grade, determine if an exam was passed.
+        """
+        grades = {
+            'O': True,
+            'Ordinary': True,
+            'P': True,
+            'Passed': True,
+            'A': True,
+            'Acceptable': True,
+            'Poor': False,
+            'H': False,
+            'Horrible': False,
+        }
+
+        return grades.get(grade, False)
+
+    @classmethod
+    def harry(cls):
+        return cls('Harry James Potter', 1980, 'male', 'Griffindor', start_year=1991, pet=('Hedwig', 'owl'))
+
+    @classmethod
+    def ron(cls):
+        return cls('Ronald Bilius Weasley', 1980, 'male', 'Griffindor', 1991, pet=('Pigwidgeon', 'owl'))
+
+    @classmethod
+    def hermione(cls):
+        return cls('Hermione', 1979, 'female', 'Griffindor', 1991, pet=('Crookshanks', 'cat'))
+
 
 class Professor(HogwartsMember):
     """
@@ -54,6 +94,18 @@ class Professor(HogwartsMember):
 
         if house is not None:
             self.house = house
+
+    @staticmethod
+    def saluate_pupil():
+        return "Hello student !"
+
+    @classmethod
+    def mcgonagall(cls):
+        return cls('Minerva McGonagall', 1935, 'female', 'Transfiguration', house='Griffindor')
+
+    @classmethod
+    def snape(cls):
+        return cls('Severus Snape', 1960, 'male', 'Potions', house='Slytherin')
 
 
 class Ghost(HogwartsMember):
@@ -68,19 +120,31 @@ class Ghost(HogwartsMember):
         if house is not None:
             self.house = house
 
+    @staticmethod
+    def saluate_pupil():
+        return "BoooOOOooooh ! I'am a ghoooost"
+
 
 if __name__ == '__main__':
-    hagrid = HogwartsMember('Hagrid', '1952', 'male')
+    hagrid = HogwartsMember('Hagrid', 1952, 'male')
+    dumby = HogwartsMember.dumbledore()
 
-    harry = Pupil(
-        name='Harry',
-        birthyear='1980',
-        sex='male',
-        house='Griffindor',
-        start_year='1991',
-        pet=('Hedwig', 'owl')
-    )
+    harry = Pupil.harry()
+    ron = Pupil.ron()
+    hermione = Pupil.hermione()
 
+    snape = Professor.snape()
+    mcgonagall = Professor.mcgonagall()
+
+    nick = Ghost('Nick quasi sans tête', 541, 'male', 589)
+
+    print('Day 1\n')
     print(hagrid.says("Hello Harry !"))
     print(harry.says("Hello giant one !"))
-    print('='*30)
+    print('=' * 30)
+
+    print('Day 2\n')
+    print(snape.saluate_pupil())
+    print(nick.saluate_pupil())
+    print(f"Is Peter a full name : {Pupil.is_full_name('Peter')}")
+    print('=' * 30)
