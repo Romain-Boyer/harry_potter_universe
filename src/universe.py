@@ -1,5 +1,8 @@
 import datetime
+from abc import ABCMeta, abstractmethod
 from typing import NamedTuple
+
+NOW = 1994
 
 
 class HogwartsMember:
@@ -43,6 +46,8 @@ class HogwartsMember:
         else:
             print(f"No, {self._name} is not {trait}!")
 
+        return value
+
     @staticmethod
     def is_full_name(name_str):
         names = name_str.split(' ')
@@ -54,7 +59,8 @@ class HogwartsMember:
 
     @property
     def age(self):
-        now = datetime.datetime.now().year
+        # now = datetime.datetime.now().year
+        now = NOW
         return now - self.birthyear
 
 
@@ -67,6 +73,7 @@ class Pupil(HogwartsMember):
         super().__init__(name, birthyear, sex)
         self.house = house
         self.start_year = start_year
+        self.known_spells = set()
 
         if pet is not None:
             self.pet_name, self_pet_type = pet
@@ -121,7 +128,9 @@ class Pupil(HogwartsMember):
 
     @classmethod
     def hermione(cls):
-        return cls('Hermione', 1979, 'female', 'Griffindor', 1991, pet=('Crookshanks', 'cat'))
+        hermione_ = cls('Hermione Granger', 1979, 'female', 'Griffindor', 1991, pet=('Crookshanks', 'cat'))
+        hermione_.add_trait('highly intelligent')
+        return hermione_
 
     @classmethod
     def malfoy(cls):
@@ -130,6 +139,12 @@ class Pupil(HogwartsMember):
     @property
     def owls(self):
         return self._owls
+
+    @property
+    def current_year(self):
+        # now = datetime.datetime.now().year
+        now = NOW
+        return now - self.start_year + 1
 
     @property
     def friends(self):
@@ -166,6 +181,55 @@ class Pupil(HogwartsMember):
 
         self._friends.add(person)
         print(f'{person._name} is now your friend !')
+
+    def learn_spell(self, spell):
+        """
+        Allows a pupil to learn a spell, given that he/she is old enough
+        """
+        if spell.min_year is not None:
+            if self.current_year >= spell.min_year:
+                print(f"{self._name} now knows spell {spell.name}")
+                self.known_spells.add(spell)
+
+            elif self.exhibits_trait('highly intelligent'):
+                print(f"{self._name} now knows spell {spell.name}")
+                self.known_spells.add(spell)
+
+            elif self.current_year < spell.min_year:
+                print(f"{self._name} is too young to study this spell!")
+
+        elif spell.__class__.__name__ in ['Hex', 'Curse']:
+            # Only Slytherin's would study hexes and curses
+            if self.house == 'Slytherin':
+                print(f"{self._name} now knows spell {spell.name}")
+                self.known_spells.add(spell)
+
+            else:
+                print(f"How dare you study a hex or curse?!")
+
+        else:
+            print(f"{self._name} now knows spell {spell.name}")
+            self.known_spells.add(spell)
+
+    def cast_spell(self, spell):
+        """
+        Allows a pupil to cast a spell
+        """
+        if spell.__class__.__name__ == 'Curse':
+            print("This is dark magic - stay away from performing curses!")
+
+        elif spell.__class__.__name__ == 'Hex':
+            if self.house == 'Slytherin':
+                print(f"{self._name}: {spell.incantation}!")
+            else:
+                print(f"You shouldn't cast a hex, that's mean!")
+
+        elif spell in self.known_spells:
+            print(f"{self._name}: {spell.incantation}!")
+
+        elif spell.name not in self.known_spells:
+            print(f"You can't cast the {spell.name} spell correctly "
+                  f" - you have to study it first! ")
 
 
 class Professor(HogwartsMember):
@@ -237,29 +301,145 @@ class DeathEater(NamedTuple):
         return f"{self.__class__.__name__}({self.name}, birthyear: {self.birthyear})"
 
 
-class Charm:
-    """
-    Creates a charm
-    """
-
-    def __init__(self, incantation: str, difficulty: str = None, effect: str = None):
+class Spell(metaclass=ABCMeta):
+    """Creates a spell"""
+    def __init__(self, name:str, incantation:str, effect:str, min_year: int = None):
+        self.name = name
         self.incantation = incantation
-        self.difficulty = difficulty
         self.effect = effect
+        self.min_year = min_year
 
+    @abstractmethod
+    def cast(self):
+        pass
+
+    @property
+    @abstractmethod
+    def defining_feature(self):
+        pass
+
+    def __repr__(self):
+        return f"{self.__class__.__name__}({self.name}, incantation: '{self.incantation}', effect: {self.effect})"
+
+class Charm(Spell):
+    """
+    Creates a charm  -
+    a spell that alters the inherent qualities of an object
+    """
+    def __init__(self, name:str, incantation:str, effect:str, difficulty: str = None, min_year: int = None):
+        super().__init__(name, incantation, effect, min_year)
+        self.difficulty = difficulty
+
+    @property
+    def defining_feature(self):
+        return ("Alteration of the object's inherent qualities, "
+                "that is, its behaviour and capabilities")
     def cast(self):
         print(f"{self.incantation}!")
 
     @classmethod
     def lumos(cls):
-        return cls('Lumos', 'simple', 'Illuminates the wand tip')
+        return cls('Lumos', 'Lumos', 'Illuminates the wand tip', 'simple', min_year=5)
 
     @classmethod
     def wingardium_leviosa(cls):
-        return cls('Wingardium Leviosa', 'simple', 'Makes objects fly')
+        return cls('Wingardium Leviosa', 'Wingardium Leviosa', 'Makes objects fly', 'simple', min_year=1)
 
-    def __repr__(self):
-        return f"{self.__class__.__name__}({self.incantation}, {self.difficulty}, {self.effect})"
+
+class Transfiguration(Spell):
+    """
+    Creates a transfiguration -
+    a spell that alters the form or appearance of an object
+    """
+    def __init__(self, name: str, incantation:str, effect:str):
+        super().__init__(name, incantation, effect)
+
+    @property
+    def defining_feature(self):
+        return "Alteration of the object's form or appearance"
+
+    def cast(self):
+        pass
+
+class Jinx(Spell):
+    """
+    Creates a jinx -
+    a spell whose effects are irritating but amusing
+    """
+    def __init__(self, name: str, incantation:str, effect:str):
+        super().__init__(name, incantation, effect)
+
+    @property
+    def defining_feature(self):
+        return ("Minor darf magic - "
+                "a spell whose effects are irritating but amusing, "
+                "almost playful and of minor inconvenience to the target")
+
+    def cast(self):
+        pass
+
+class Hex(Spell):
+    """
+    Creates a hex -
+    a spell that affects an object in a negative manner
+    """
+    def __init__(self, name: str, incantation:str, effect:str, min_year: int = None):
+        super().__init__(name, incantation, effect, min_year)
+
+    @property
+    def defining_feature(self):
+        return ("Medium dark magic - "
+                "Affects an object in a negative manner. "
+                "Major inconvenience to the target.")
+
+    def cast(self):
+        pass
+
+class Curse(Spell):
+    """
+    Creates a curse -
+    a spell that affects an object in a strongly negative manner
+    """
+    def __init__(self, name: str, incantation:str, effect:str, difficulty: str = None):
+        super().__init__(name, incantation, effect)
+
+    @property
+    def defining_feature(self):
+        return ("Worst kind of dark magic - "
+                "Intended to affect an object in a strongly negative manner.")
+
+    def cast(self):
+        pass
+
+class CounterSpell(Spell):
+    """
+    Creates a counter-spell -
+    a spell that inhibits the effect of another spell
+    """
+    def __init__(self, name: str, incantation:str, effect:str):
+        super().__init__(name, incantation, effect)
+
+    @property
+    def defining_feature(self):
+        return ("Inhibites the effects of another spell")
+
+    def cast(self):
+        pass
+
+class HealingSpell(Spell):
+    """
+    Creates a healing-spell -
+    a spell that improves the condition of a living object
+    """
+    def __init__(self, name: str, incantation:str, effect:str):
+        super().__init__(name, incantation, effect)
+
+    @property
+    def defining_feature(self):
+        return "Improves the condition of a living object"
+
+    def cast(self):
+        pass
 
 
 if __name__ == '__main__':
@@ -284,6 +464,11 @@ if __name__ == '__main__':
     ron.add_trait('impatient', value=False)
 
     bellatrix = DeathEater('Bellatrix Lestrange', 1951)
+
+    wing_lev = Charm.wingardium_leviosa()
+    rictum = Charm('tickling_charm', 'Rictumsempra', 'Causes victim to buckle with laughter', min_year=5)
+    stickfast = Hex('stickfast_hex', 'Colloshoo', "Makes target's shoes stick to ground")
+    crutio = Curse('Cruciatus Curse', 'Crucio', 'Causes intense, excruciating pain on the victim', 'difficult')
 
     print('Day 1\n')
     print(hagrid.says("Hello Harry !"))
@@ -326,3 +511,16 @@ if __name__ == '__main__':
     print(bellatrix)
     print(bellatrix.name)
     print(f'{bellatrix.leader.name} is Beatrix\' leader')
+    print('=' * 30)
+
+    print('Day 12-15\n')
+    print("Harry knows the following spells: ", harry.known_spells or 'None')
+    print("Harry is currently in year: ", harry.current_year)
+    harry.learn_spell(wing_lev)
+
+    # Test whether Harry can learn a spell he is too young for
+    harry.learn_spell(rictum)
+    # Can hermione study the spell?
+    hermione.learn_spell(rictum)
+
+    harry.cast_spell(wing_lev)
