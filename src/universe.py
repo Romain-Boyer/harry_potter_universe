@@ -12,12 +12,35 @@ class HogwartsMember:
         self._name = name
         self.birthyear = birthyear
         self.sex = sex
+        self._traits = {}
 
     def __repr__(self):
         return f"{self.__class__.__name__}({self._name}, birthyear: {self.birthyear})"
 
     def says(self, words):
         return f'{self._name} says "{words}"'
+
+    def add_trait(self, trait, value=True):
+        self._traits[trait] = value
+
+    def print_traits(self):
+        true_traits = [trait for trait, value in self._traits.items() if value]
+        false_traits = [trait for trait, value in self._traits.items() if not value]
+
+        print(f"{self._name} is {', '.join(true_traits)} "
+              f"but not {', '.join(false_traits)}")
+
+    def exhibits_trait(self, trait):
+        try:
+            value = self._traits[trait]
+        except KeyError:
+            print(f"{self._name} does not have a character trait with the name '{trait}'")
+            return
+
+        if value:
+            print(f"Yes, {self._name} is {trait}!")
+        else:
+            print(f"No, {self._name} is not {trait}!")
 
     @staticmethod
     def is_full_name(name_str):
@@ -244,6 +267,10 @@ if __name__ == '__main__':
     lumos = Charm.lumos()
     wingardium_leviosa = Charm.wingardium_leviosa()
 
+    ron.add_trait('kind')
+    ron.add_trait('tidy-minded')
+    ron.add_trait('impatient', value=False)
+
     print('Day 1\n')
     print(hagrid.says("Hello Harry !"))
     print(harry.says("Hello giant one !"))
@@ -273,3 +300,9 @@ if __name__ == '__main__':
     harry.be_friend(hermione)
     print(harry.friends)
     lumos.cast()
+    print('=' * 30)
+
+    print('Day 9\n')
+    ron.print_traits()
+    ron.exhibits_trait('kind')
+    ron.exhibits_trait('fat')
