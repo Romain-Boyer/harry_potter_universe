@@ -5,7 +5,7 @@ class HogwartsMember:
 
     location = 'England'
 
-    def __init__(self, name, birthyear, sex):
+    def __init__(self, name: str, birthyear: int, sex: str):
         self._name = name
         self.birthyear = birthyear
         self.sex = sex
@@ -28,7 +28,7 @@ class Pupil(HogwartsMember):
     Creates a Hogwarts pupil
     """
 
-    def __init__(self, name, birthyear, sex, house, start_year, pet=None):
+    def __init__(self, name: str, birthyear: int, sex: str, house: str, start_year: int, pet: tuple = None):
         super().__init__(name, birthyear, sex)
         self.house = house
         self.start_year = start_year
@@ -88,7 +88,7 @@ class Professor(HogwartsMember):
     Creates a Hogwarts professor
     """
 
-    def __init__(self, name, birthyear, sex, subject, house=None):
+    def __init__(self, name: str, birthyear: int, sex: str, subject: str, house: str = None):
         super().__init__(name, birthyear, sex)
         self.subject = subject
 
@@ -113,7 +113,7 @@ class Ghost(HogwartsMember):
     Creates a Hogwarts ghost
     """
 
-    def __init__(self, name, birthyear, sex, year_of_death, house=None):
+    def __init__(self, name: str, birthyear: int, sex: str, year_of_death: int, house: str = None):
         super().__init__(name, birthyear, sex)
         self.year_of_death = year_of_death
 
