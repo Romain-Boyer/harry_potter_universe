@@ -1,4 +1,5 @@
 import datetime
+from typing import NamedTuple
 
 
 class HogwartsMember:
@@ -131,10 +132,6 @@ class Pupil(HogwartsMember):
         return self._owls
 
     @property
-    def owls_passed(self):
-        return
-
-    @property
     def friends(self):
         if not self._friends:
             return f"{self._name} has no friend"
@@ -225,6 +222,21 @@ class Ghost(HogwartsMember):
         return cls('Sir Nicholas de Mimsy-Porpington', 1401, 'male', '1492', 'Gryffindor')
 
 
+class DeathEater(NamedTuple):
+    """
+    Creates a Deatheater
+    """
+    name: str
+    birthyear: int
+
+    @property
+    def leader(self):
+        return DeathEater('Voldemort', 1926)
+
+    def __repr__(self):
+        return f"{self.__class__.__name__}({self.name}, birthyear: {self.birthyear})"
+
+
 class Charm:
     """
     Creates a charm
@@ -271,6 +283,8 @@ if __name__ == '__main__':
     ron.add_trait('tidy-minded')
     ron.add_trait('impatient', value=False)
 
+    bellatrix = DeathEater('Bellatrix Lestrange', 1951)
+
     print('Day 1\n')
     print(hagrid.says("Hello Harry !"))
     print(harry.says("Hello giant one !"))
@@ -306,3 +320,9 @@ if __name__ == '__main__':
     ron.print_traits()
     ron.exhibits_trait('kind')
     ron.exhibits_trait('fat')
+    print('=' * 30)
+
+    print('Day 10-11\n')
+    print(bellatrix)
+    print(bellatrix.name)
+    print(f'{bellatrix.leader.name} is Beatrix\' leader')
