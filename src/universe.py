@@ -62,6 +62,8 @@ class Pupil(HogwartsMember):
             'Transfiguration': False
         }
 
+        self._friends = set()
+
     def __repr__(self):
         return (f"{self.__class__.__name__}"
                 f"({self._name}, birthyear: {self.birthyear}, house: {self.house})")
@@ -97,9 +99,23 @@ class Pupil(HogwartsMember):
     def hermione(cls):
         return cls('Hermione', 1979, 'female', 'Griffindor', 1991, pet=('Crookshanks', 'cat'))
 
+    @classmethod
+    def malfoy(cls):
+        return cls('Draco Lucius Malfoy', 1980, 'male', 'Slytherin', 1991, pet=('Unnamed', 'owl'))
+
     @property
     def owls(self):
         return self._owls
+
+    @property
+    def owls_passed(self):
+        return
+
+    @property
+    def friends(self):
+        if not self._friends:
+            return f"{self._name} has no friend"
+        return f"{self._name}'s current friends are {[person._name for person in self._friends]}"
 
     @owls.setter
     def owls(self, subject_and_grade):
@@ -120,6 +136,16 @@ class Pupil(HogwartsMember):
         print("Caution, you are deleting this students' ELM's! "
               "You should only do that if she/he dropped out of school without passing any exam!")
         del self._owls
+
+    def be_friend(self, person):
+        """Adds another person to your list of friends"""
+        if (person.__class__.__name__ != 'HogwartsMember'
+                and self.house != 'Slytherin'
+                and person.house == 'Slytherin'):
+            print('Are you sure you want to be friends with someone from Slytherin ?')
+
+        self._friends.add(person)
+        print(f'{person._name} is now your friend !')
 
 
 class Professor(HogwartsMember):
@@ -171,6 +197,35 @@ class Ghost(HogwartsMember):
     def saluate_pupil():
         return "BoooOOOooooh ! I'am a ghoooost"
 
+    @classmethod
+    def nearly_headless_nick(cls):
+        return cls('Sir Nicholas de Mimsy-Porpington', 1401, 'male', '1492', 'Gryffindor')
+
+
+class Charm:
+    """
+    Creates a charm
+    """
+
+    def __init__(self, incantation: str, difficulty: str = None, effect: str = None):
+        self.incantation = incantation
+        self.difficulty = difficulty
+        self.effect = effect
+
+    def cast(self):
+        print(f"{self.incantation}!")
+
+    @classmethod
+    def lumos(cls):
+        return cls('Lumos', 'simple', 'Illuminates the wand tip')
+
+    @classmethod
+    def wingardium_leviosa(cls):
+        return cls('Wingardium Leviosa', 'simple', 'Makes objects fly')
+
+    def __repr__(self):
+        return f"{self.__class__.__name__}({self.incantation}, {self.difficulty}, {self.effect})"
+
 
 if __name__ == '__main__':
     hagrid = HogwartsMember('Hagrid', 1952, 'male')
@@ -179,11 +234,15 @@ if __name__ == '__main__':
     harry = Pupil.harry()
     ron = Pupil.ron()
     hermione = Pupil.hermione()
+    malfoy = Pupil.malfoy()
 
     snape = Professor.snape()
     mcgonagall = Professor.mcgonagall()
 
-    nick = Ghost('Nick quasi sans tête', 541, 'male', 589)
+    nick = Ghost.nearly_headless_nick()
+
+    lumos = Charm.lumos()
+    wingardium_leviosa = Charm.wingardium_leviosa()
 
     print('Day 1\n')
     print(hagrid.says("Hello Harry !"))
@@ -206,3 +265,11 @@ if __name__ == '__main__':
     print(f'Before, Harry\'s grade : {harry.owls["Potions"]}')
     harry.owls = ('Potions', 'P')
     print(f'And now Harry\'s grade : {harry.owls["Potions"]}')
+    print('=' * 30)
+
+    print('Day 8\n')
+    print(harry.friends)
+    harry.be_friend(ron)
+    harry.be_friend(hermione)
+    print(harry.friends)
+    lumos.cast()
