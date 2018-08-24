@@ -10,6 +10,9 @@ class HogwartsMember:
         self.birthyear = birthyear
         self.sex = sex
 
+    def __repr__(self):
+        return f"{self.__class__.__name__}({self._name}, birthyear: {self.birthyear})"
+
     def says(self, words):
         return f'{self._name} says "{words}"'
 
@@ -50,6 +53,10 @@ class Pupil(HogwartsMember):
             'Potions': False,
             'Transfiguration': False
         }
+
+    def __repr__(self):
+        return (f"{self.__class__.__name__}"
+                f"({self._name}, birthyear: {self.birthyear}, house: {self.house})")
 
     @staticmethod
     def passed(grade):
@@ -95,6 +102,10 @@ class Professor(HogwartsMember):
         if house is not None:
             self.house = house
 
+    def __repr__(self):
+        return (f"{self.__class__.__name__}({self._name}, "
+                f"birthyear: {self.birthyear}, subject: {self.subject})")
+
     @staticmethod
     def saluate_pupil():
         return "Hello student !"
@@ -119,6 +130,10 @@ class Ghost(HogwartsMember):
 
         if house is not None:
             self.house = house
+
+    def __repr__(self):
+        return (f"{self.__class__.__name__}({self._name}, "
+                f"birthyear: {self.birthyear}, year of death: {self.year_of_death})")
 
     @staticmethod
     def saluate_pupil():
@@ -148,3 +163,6 @@ if __name__ == '__main__':
     print(nick.saluate_pupil())
     print(f"Is Peter a full name : {Pupil.is_full_name('Peter')}")
     print('=' * 30)
+
+    print('Day 4\n')
+    print(harry)
