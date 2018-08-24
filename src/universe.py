@@ -1,3 +1,6 @@
+import datetime
+
+
 class HogwartsMember:
     """
     Creates a member of the Hogwarts School of Witchcraft and Wizardry
@@ -24,6 +27,11 @@ class HogwartsMember:
     @classmethod
     def dumbledore(cls):
         return cls('Albus Percival Wulfric Brian Dumbledore', 1881, 'male')
+
+    @property
+    def age(self):
+        now = datetime.datetime.now().year
+        return now - self.birthyear
 
 
 class Pupil(HogwartsMember):
@@ -88,6 +96,30 @@ class Pupil(HogwartsMember):
     @classmethod
     def hermione(cls):
         return cls('Hermione', 1979, 'female', 'Griffindor', 1991, pet=('Crookshanks', 'cat'))
+
+    @property
+    def owls(self):
+        return self._owls
+
+    @owls.setter
+    def owls(self, subject_and_grade):
+        try:
+            subject, grade = subject_and_grade
+        except ValueError:
+            raise ValueError('Pass an interable with two items: subject and grade!')
+
+        passed = self.passed(grade)
+
+        if passed:
+            self._owls[subject] = True
+        else:
+            print('The exam was not passed, so no Owl was awarded!')
+
+    @owls.deleter
+    def owls(self):
+        print("Caution, you are deleting this students' ELM's! "
+              "You should only do that if she/he dropped out of school without passing any exam!")
+        del self._owls
 
 
 class Professor(HogwartsMember):
@@ -166,3 +198,11 @@ if __name__ == '__main__':
 
     print('Day 4\n')
     print(harry)
+    print('=' * 30)
+
+    print('Day 6\n')
+    print(f"Harry is {harry.age} years old")
+    print("Today harry passed his potion exam !!")
+    print(f'Before, Harry\'s grade : {harry.owls["Potions"]}')
+    harry.owls = ('Potions', 'P')
+    print(f'And now Harry\'s grade : {harry.owls["Potions"]}')
