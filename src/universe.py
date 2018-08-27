@@ -96,3 +96,6 @@ if __name__ == '__main__':
 
     print('Days 16 - 18\n')
     print(f'New house : {gryffindor.name}')
+
+    print('Day 20\n')
+    print(harry.says("C'est la guerre, chuchotons!"))
