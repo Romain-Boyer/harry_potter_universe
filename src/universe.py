@@ -1,6 +1,7 @@
 from deatheater import DeathEater
 from ghost import Ghost
 from hogwarts_member import HogwartsMember
+from house import House
 from professor import Professor
 from pupil import Pupil
 from spell import (Spell, Charm, Transfiguration, Jinx, Hex, Curse, CounterSpell, HealingSpell)
@@ -18,6 +19,7 @@ if __name__ == '__main__':
     mcgonagall = Professor.mcgonagall()
 
     nick = Ghost.nearly_headless_nick()
+    bloody_baron = Ghost("Bloody Baron's", 1409, 'male', 1468, 'Slytherin')
 
     lumos = Charm.lumos()
     wingardium_leviosa = Charm.wingardium_leviosa()
@@ -32,6 +34,9 @@ if __name__ == '__main__':
     rictum = Charm('tickling_charm', 'Rictumsempra', 'Causes victim to buckle with laughter', min_year=5)
     stickfast = Hex('stickfast_hex', 'Colloshoo', "Makes target's shoes stick to ground")
     crutio = Curse('Cruciatus Curse', 'Crucio', 'Causes intense, excruciating pain on the victim', 'difficult')
+
+    gryffindor = House('Griffyndor', ['bravery', 'nerve', 'courage'], mcgonagall, nick)
+    slytherin = House('Slytherin', ['cunning', 'ambition', 'determination'], snape, bloody_baron)
 
     print('Day 1\n')
     print(hagrid.says("Hello Harry !"))
@@ -87,3 +92,7 @@ if __name__ == '__main__':
     hermione.learn_spell(rictum)
 
     harry.cast_spell(wing_lev)
+    print('=' * 30)
+
+    print('Days 16 - 18\n')
+    print(f'New house : {gryffindor.name}')
